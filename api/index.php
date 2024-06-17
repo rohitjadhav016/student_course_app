@@ -59,18 +59,13 @@ if($connObj){
                 $stmt = $connObj->prepare($sql);
                 $stmt->bindParam(':id', $path[3]);
                 $stmt->execute();
-                $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
+                $studentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
             } else {
                 $stmt = $connObj->prepare($sql);
                 $stmt->execute();
                 $studentData = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
-            if(!empty($studentData)){
-                echo json_encode($studentData);
-            }else{
-                $response = ['status' => 6, 'message' => 'No Data Found'];
-                echo json_encode($response);
-            }
+            echo json_encode($studentData);
             break;
 
         case "DELETE":

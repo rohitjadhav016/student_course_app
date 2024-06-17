@@ -9,7 +9,7 @@ export default function EditMyCourses(){
     const {id} = useParams();
 
     const navigate = useNavigate();
-    const [course, setCourse] = useState([]);
+    const [course, setCourse] = useState({});
     const [course_name, setCourseName] = useState("");
     const [description, setDescription] = useState("");
     const [start_date, setStartDate] = useState("");
@@ -18,17 +18,16 @@ export default function EditMyCourses(){
     const [error, setError] = useState("");
     const [msg, setMsg] = useState("");
 
-    const getCourseData = async () => {
+    const getCourseData = () => {
         try {
             axios.get(`http://localhost:80/student-courses-app/api/${id}`)
             .then((response) => {
-                console.log('Edit Data'+response.id);
-                setCourse(response.data.id);
-                setCourseName('Hi');
-                setDescription('Something');
-                setStartDate('12/04/2024');
-                setEndDate('12/08/2024');
-                setStatus(1);
+                setCourse(response.data);
+                // setCourseName('Hi');
+                // setDescription('Something');
+                // setStartDate('12/04/2024');
+                // setEndDate('12/08/2024');
+                // setStatus(1);
                 return response.data;
             })
             } catch (error) {

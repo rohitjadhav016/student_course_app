@@ -31,9 +31,6 @@ const handleSubmit = (event) => {
     })
 }
 
-const handleAddUser = () => {
-    
-}
 return (
 <div className="Auth-form-container">
     <form className="Auth-form" onSubmit={handleSubmit}>
@@ -51,7 +48,7 @@ return (
             <div className="text-center">
                 Already Have a Account?{" "}
                 <Link to="/">
-                    <span className="link-primary" onClick={handleAddUser}>
+                    <span className="link-primary">
                         Login Here
                     </span>
                 </Link>

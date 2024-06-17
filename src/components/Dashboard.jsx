@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
+import Select from 'react-select';
 import axios from "axios";
  
 export default function Dashboard() {
@@ -11,8 +12,11 @@ export default function Dashboard() {
         navigate("/");
     }
 
+    const [selectedStatus, setSelectedStatus] = useState(null);
+
     const [courses, setCourses] = useState([]);
     const [error, setError] = useState(null);
+    const [msg, setMsg] = useState("");
 
     const handleView = (item) => {
         var params = {
@@ -56,8 +60,7 @@ export default function Dashboard() {
       try {
         axios.get('http://localhost:80/student-courses-app/api/')
         .then((response) => {
-          console.log(response.data);
-          setCourses(response.data); 
+          setCourses(response.data);
           return response.data;
         })
       } catch (error) {
@@ -68,23 +71,44 @@ export default function Dashboard() {
     useEffect(() => {
       getCoursesData();
     }, [])
-    
+
+    const status = Array.from(
+      new Set(courses.map((resp) => resp.status))
+    )
+
+    const statusOptions = status.map((res) => ({
+      value : res,
+      label : res == 1 ? 'Active' : 'Inactive'
+    }))
+    const filteredCourses = selectedStatus ? courses.filter((course) => course.status === selectedStatus.value) : courses; 
     return(
         <div className="main-container">
-          <nav className="navbar navbar-expand-md navbar-light">
+          <nav className="navbar navbar-expand-md navbar-light w-100 d-flex mb-2">
               <div className="container">
                 <a className="navbar-brand" href="/">Welcome to High Tech Online Courses Platform</a>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span className="navbar-toggler-icon" />
-                </button>
               </div>
-              <label>Status</label>
-                <select className="" id="dropdown">
-                    <option value="">Filter Results</option>
-                    <option onchanhe>Active</option>
-                    <option>Inactive </option>
-                </select>
+              <div>
+              <Select className="w-100"
+                options={statusOptions}
+                isClearable
+                placeholder="Filter By Status"
+                onChange={(selectStatus) => setSelectedStatus(selectStatus)}
+              />
+              </div>
+              <button className="btn btn-outline-primary m-4" type="submit" onClick={logoutSubmit}>
+                Logout
+              </button>
+
           </nav>
+          <div className="card-body p-4 p-lg-5 text-black">
+                <p>
+                    {
+                        error !== null ? 
+                        <div style={{color: '#842029'}}><b>{error}</b></div> :
+                        <div style={{color: '#000'}}><b>{msg}</b></div>
+                    }
+                </p>
+          </div>
           <section>
             <table className='table table-hover table-responsive table-bordered'>
               <thead>
@@ -98,7 +122,7 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-              {courses.map((item, key) => (
+              {filteredCourses.map((item, key) => (
                     <tr key={key}>
                       <td>{item.course_name}</td>
                       <td>{item.description}</td>  
@@ -110,7 +134,7 @@ export default function Dashboard() {
                         <Link to={`/edit-course/${item.id}`}><button className="btn btn-info m-2" onClick={() => handleEdit(item)}><span className='glyphicon glyphicon-edit'></span> Edit</button></Link> 
                         {
                           item.status == 1 ? (<button className="btn btn-danger delete-object m-2" onClick={() => handleDelete(item)}><span className='glyphicon glyphicon-remove'></span> Delete</button>)
-                          : (<button className="btn btn-danger delete-object m-2" onClick={() => handleDelete(item)} disabled><span className='glyphicon glyphicon-remove' disabled></span> Delete</button>)
+                          : (<button className="btn btn-danger delete-object m-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Course Inactive" disabled><span className='glyphicon glyphicon-remove' disabled></span> Delete</button>)
                         }
                         
                       </td>
